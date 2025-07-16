@@ -12,6 +12,8 @@ chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
 
 docker compose version
 
+>>> scp -i DevOpsKey.pem -r C:\Users\azer\Desktop\docker-app ubuntu@56.228.29.255:/home/ubuntu/laravel
+
 cd laravel
 docker compose up -d
 
