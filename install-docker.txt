@@ -1,0 +1,42 @@
+sudo apt update
+sudo apt upgrade -y
+sudo apt install docker.io -y
+sudo usermod -aG docker $USER (and exiting)
+
+DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+mkdir -p $DOCKER_CONFIG/cli-plugins
+
+curl -SL https://github.com/docker/compose/releases/download/v2.38.2/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
+
+chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
+
+docker compose version
+
+cd laravel
+docker compose up -d
+
+docker compose ps
+
+docker compose exec app bash
+
+echo "🔐 Setting permissions for /var/www/html"
+chown -R www-data:www-data /var/www/html
+chmod -R 775 /var/www/html
+
+echo "📦 Running composer install..."
+composer install --no-interaction --prefer-dist --optimize-autoloader
+
+echo "🔑 Generating app key..."
+php artisan key:generate
+
+echo "🧹 Clearing and caching config and routes..."
+php artisan config:clear
+php artisan config:cache
+php artisan route:clear
+php artisan route:cache
+
+echo "🗄️ Running migrations..."
+php artisan migrate --force
+
+echo "✅ Setup completed successfully!"
+echo ""
